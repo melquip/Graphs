@@ -86,6 +86,24 @@ class Graph:
                     # push the next vertex
                     s.push(next_vertex)
 
+    def dft_recursive_h(self, v, visited, stack):
+        # while stack is not empty (len greater than 0)
+        if stack.size() > 0:
+            # pop the first vertex
+            v = stack.pop()
+            # if that vertex has not been visited
+            if v not in visited:
+                # mark as visited and print for debugging
+                visited.add(v)
+                print(v) # for debugging
+                # iterate over the child vertices of the current vertex
+                for next_vertex in self.vertices[v]:
+                    # push the next vertex
+                    stack.push(next_vertex)
+            self.dft_recursive_h(v, visited, stack)
+        else:
+            return False
+
     def dft_recursive(self, starting_vertex):
         """
         Print each vertex in depth-first order
@@ -93,7 +111,13 @@ class Graph:
 
         This should be done using recursion.
         """
-        
+        # create empty stack push the starting vertex id
+        s = Stack()
+        s.push(starting_vertex)
+        # create a set to store our visited vertices
+        visited = set()
+        self.dft_recursive_h(starting_vertex, visited, s)
+        return visited
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -111,7 +135,7 @@ class Graph:
         """
         pass  # TODO
 
-    def dfs_recursive(self, starting_vertex):
+    def dfs_recursive(self, starting_vertex, destination_vertex):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
