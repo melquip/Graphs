@@ -41,25 +41,16 @@ class Graph:
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
-        # create empty queue enqueue the starting vertex id
         q = Queue()
         q.enqueue(starting_vertex)
-        # create a set to store our visited vertices
         visited = set()
-
-        # while queue is not empty (len greater than 0)
         while q.size() > 0:
-            # dequeue the first vertex
             v = q.dequeue()
-            # if that vertex has not been visited
             if v not in visited:
-                # mark as visited and print for debugging
                 visited.add(v)
-                print(v) # for debugging
-                # iterate over the child vertices of the current vertex
-                for next_vertex in self.vertices[v]:
-                    # enqueue the next vertex
-                    q.enqueue(next_vertex)
+                for neighbour in self.vertices[v]:
+                    q.enqueue(neighbour)
+        return visited
 
     def dft(self, starting_vertex):
         """
@@ -87,18 +78,12 @@ class Graph:
                     s.push(next_vertex)
 
     def dft_recursive_h(self, v, visited, stack):
-        # while stack is not empty (len greater than 0)
         if stack.size() > 0:
-            # pop the first vertex
             v = stack.pop()
-            # if that vertex has not been visited
             if v not in visited:
-                # mark as visited and print for debugging
                 visited.add(v)
                 print(v) # for debugging
-                # iterate over the child vertices of the current vertex
                 for next_vertex in self.vertices[v]:
-                    # push the next vertex
                     stack.push(next_vertex)
             self.dft_recursive_h(v, visited, stack)
         else:
@@ -111,21 +96,59 @@ class Graph:
 
         This should be done using recursion.
         """
-        # create empty stack push the starting vertex id
         s = Stack()
         s.push(starting_vertex)
-        # create a set to store our visited vertices
         visited = set()
         self.dft_recursive_h(starting_vertex, visited, s)
         return visited
 
-    def bfs(self, starting_vertex, destination_vertex):
+    def bfs(self, sv, dv):
         """
         Return a list containing the shortest path from
         starting_vertex to destination_vertex in
         breath-first order.
+
+        Create an empty queue and enqueue A PATH TO the starting vertex ID
+        Create a Set to store visited vertices
+        While the queue is not empty...
+            Dequeue the first PATH eg -> [a, b, c, r, g]
+            Grab the last vertex from the PATH
+            If that vertex has not been visited...
+                CHECK IF IT'S THE TARGET
+                    IF SO, RETURN PATH
+
+                Mark it as visited...
+                Then add A PATH TO its neighbors to the back of the queue
+                COPY THE PATH
+                APPEND THE NEIGHOR TO THE BACK
         """
-        pass  # TODO
+        visited = set()
+        queue = Queue()
+        queue.enqueue([sv])
+        
+        if sv == dv:
+            return [sv, dv]
+
+        while queue.size() > 0:
+            visited = set()
+            path = queue.dequeue()
+            vertex = path[-1]
+            if vertex not in visited:
+                if vertex == dv:
+                    return path
+
+                neighbours = self.get_neighbors(vertex)
+                for neighbour in neighbours:
+                    new_path = list(path)
+                    new_path.append(neighbour)
+                    queue.enqueue(new_path)
+
+                    if neighbour == dv:
+                        return new_path
+
+                visited.add(vertex)
+        
+        raise ValueError(f'This destination vertex is not connected to the starting vertex.')
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -133,7 +156,7 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
         """
