@@ -150,13 +150,39 @@ class Graph:
         
         raise ValueError(f'This destination vertex is not connected to the starting vertex.')
 
-    def dfs(self, starting_vertex, destination_vertex):
+    def dfs(self, sv, dv):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
         depth-first order.
         """
+        visited = set()
+        stack = Stack()
+        stack.push([sv])
         
+        if sv == dv:
+            return [sv, dv]
+
+        while stack.size() > 0:
+            visited = set()
+            path = stack.pop()
+            vertex = path[-1]
+            if vertex not in visited:
+                if vertex == dv:
+                    return path
+
+                neighbours = self.get_neighbors(vertex)
+                for neighbour in neighbours:
+                    new_path = list(path)
+                    new_path.append(neighbour)
+                    stack.push(new_path)
+
+                    if neighbour == dv:
+                        return new_path
+
+                visited.add(vertex)
+        
+        raise ValueError(f'This destination vertex is not connected to the starting vertex.')
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
         """
