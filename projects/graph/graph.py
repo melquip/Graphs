@@ -176,7 +176,7 @@ class Graph:
         
         raise ValueError(f'This destination vertex is not connected to the starting vertex.')
 
-    def dfs_recursive(self, sv, dv, visited = None):
+    def dfs_recursive(self, sv, dv, path = None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -184,16 +184,16 @@ class Graph:
 
         This should be done using recursion.
         """
-        if visited is None:
-            visited = set()
-        visited.add(sv)
+        if path is None:
+            path = [sv]
         if sv == dv:
-            return
+            return path
         neighbors = self.get_neighbors(sv)
-        for vertex in neighbors - visited:
-            self.dfs_recursive(vertex, dv, visited)
-        return visited
-
+        for neighbor in neighbors - set(path):
+            findPath = self.dfs_recursive(neighbor, dv, path + [neighbor])
+            if findPath is not None:
+                return findPath
+        
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
     # https://github.com/LambdaSchool/Graphs/blob/master/objectives/breadth-first-search/img/bfs-visit-order.png
