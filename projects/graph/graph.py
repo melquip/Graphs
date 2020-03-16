@@ -41,7 +41,25 @@ class Graph:
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+        # create empty queue enqueue the starting vertex id
+        q = Queue()
+        q.enqueue(starting_vertex)
+        # create a set to store our visited vertices
+        visited = set()
+
+        # while queue is not empty (len greater than 0)
+        while q.size() > 0:
+            # dequeue the first vertex
+            v = q.dequeue()
+            # if that vertex has not been visited
+            if v not in visited:
+                # mark as visited and print for debugging
+                visited.add(v)
+                print(v) # for debugging
+                # iterate over the child vertices of the current vertex
+                for next_vertex in self.vertices[v]:
+                    # enqueue the next vertex
+                    q.enqueue(next_vertex)
 
     def dft(self, starting_vertex):
         """
