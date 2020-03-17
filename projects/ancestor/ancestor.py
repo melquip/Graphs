@@ -3,13 +3,10 @@ from util import Queue
 
 def earliest_ancestor(ancestors, sv):
     graph = defaultdict(set)
-    #parents = []
     for (parent, child) in ancestors:
         if not graph[parent]:
             graph[parent] = set()
         graph[parent].add(child)
-        #parents.append(parent)
-    print('\n\nstarting', sv)
     return bfs(graph, sv, ancestors)
 
 def bfs(graph, sv, ancestors):
@@ -18,26 +15,22 @@ def bfs(graph, sv, ancestors):
     queue.enqueue([sv])
     while queue.size() > 0:
         path = queue.dequeue()
-        nodes = path - list(visited)
-        print('vertex?', nodes)
+        nodes = set(path) - visited
+        # print('vertex?', nodes)
         for vertex in nodes:
             parents = [parent for (parent, child) in ancestors if child == vertex]
-            print('parents?', parents)
+            if len(parents) != 0:
+                parents = [min(parents)]
             parentsOfParents = [parent for (parent, child) in ancestors if child in parents]
-            print('parentsOfParents?', parentsOfParents, len(parentsOfParents))
-            if len(parentsOfParents) == 0:
+            # print('parents?', parents)
+            # print('parentsOfParents?', parentsOfParents, len(parentsOfParents))
+            if len(parentsOfParents) == 0: # and queue.size() == 0
                 return -1 if len(parents) == 0 else min(parents)
             for parent in parents:   
-                visited.add(parent)                 
                 new_path = list(path)
                 new_path.append(parent)
-                # if len(parentsOfParents) == 1:
-                #     new_path.append(parentsOfParents[0])
                 queue.enqueue(new_path)
             visited.add(vertex)
-    
-    # raise ValueError(f'This destination vertex is not connected to the starting vertex.')
-
 
 
 if __name__ == '__main__':
