@@ -1,5 +1,5 @@
 from collections import defaultdict
-from util import Queue
+from util import Queue, Stack
 
 def earliest_ancestor(ancestors, sv):
     graph = defaultdict(set)
@@ -7,8 +7,26 @@ def earliest_ancestor(ancestors, sv):
         if not graph[parent]:
             graph[parent] = set()
         graph[parent].add(child)
-    return bfs(graph, sv, ancestors)
+    return dfs(graph, sv, ancestors)
 
+# second pass solution
+def dfs(graph, sv, ancestors):
+    visited = set()
+    stack = Stack()
+    stack.push([sv])
+    while stack.size() > 0:
+        path = stack.pop()
+        nodes = set(path) - visited
+        for vertex in nodes:
+            parents = [parent for (parent, child) in ancestors if child == vertex]
+            if len(parents) == 0:
+                return -1 if path[-1] == sv else path[-1]
+            new_path = list(path)
+            new_path.append(min(parents))
+            stack.push(new_path)
+            visited.add(vertex)
+    
+# first pass solution
 def bfs(graph, sv, ancestors):
     visited = set()
     queue = Queue()
