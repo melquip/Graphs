@@ -104,6 +104,13 @@ class SocialGraph:
         return visited
 
 
+"""
+To create 100 users with an average of 10 friends each, how many times would you need to call add_friendship()? Why?
+500 times because we are adding 100 * 10 = 1000 friendships but only 500 are unique.
+
+If you create 1000 users with an average of 5 random friends each, what percentage of other users will be in a particular user's extended social network? What is the average degree of separation between a user and those in his/her extended network?
+
+"""
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
