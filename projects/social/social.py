@@ -1,3 +1,6 @@
+import random
+from util import Queue
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -42,12 +45,38 @@ class SocialGraph:
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
 
         # Add users
+        # iterate over 0 to num users...
+        for u in range(0, num_users):
+            # add user using an f-string
+            self.add_user(f'User {u}')
 
         # Create friendships
+        # generate all possible friendship combinations
+        possible_friendships = []
 
+        # avoid dups by making sure the first number is smaller than the second
+        # iterate over user id in users...
+        for user_id in self.users:
+            # iterate over friend id in in a range from user id + 1 to last id + 1...
+            for friend_id in range(user_id + 1, self.last_id + 1):
+                # append a user id and friend id tuple to the possible friendships
+                possible_friendships.append((user_id, friend_id))
+        
+        # shuffle friendships random import
+        random.shuffle(possible_friendships)
+
+        # create friendships for the first N pairs of the list
+        # N is determined by the formula: num users * avg friendships // 2
+        # NOTE: need to divide by 2 since each add_friendship() creates 2 friendships
+        # iterate over a range using the formula as the end base...
+        for i in range(num_users * avg_friendships // 2):
+            # set friendship to possible friendships at index
+            friendship = possible_friendships[i]
+            # add friendship of frienship[0], friendship[1]
+            self.add_friendship(friendship[0], friendship[1])
+    
     def get_all_social_paths(self, user_id):
         """
         Takes a user's user_id as an argument
@@ -58,13 +87,66 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        queue = Queue()
+        queue.enqueue([user_id])
+        
+        while queue.size() > 0:
+            path = queue.dequeue()
+            vertex = path[-1]
+            if vertex not in visited:
+                neighbors = self.friendships[vertex]
+                for neighbor in neighbors:
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    queue.enqueue(new_path)
+                visited[vertex] = path
+        
         return visited
 
+    def extendedSocialNetwork(self, user_id):
+        paths = self.get_all_social_paths(user_id)
+        totalExtendedUsers = []
+        degreesOfSeparation = []
+        for user in paths:
+            path = paths[user]
+            pathSize = len(path)
+            degreeSeparation = 0
+            if pathSize > 2:
+                degreeSeparation = pathSize - 2
+                for friend in path:
+                    if friend not in totalExtendedUsers and friend is not user_id and friend is not user:
+                        totalExtendedUsers.append(friend)
+            degreesOfSeparation.append(degreeSeparation)
+        
+        
+        averageDegreeOfSeparation = float("{0:.2f}".format(sum(degreesOfSeparation) / len(degreesOfSeparation)))
+        percentageOfOtherUsers = float("{0:.2f}".format(len(totalExtendedUsers) / len(self.users) * 100))
+        return (percentageOfOtherUsers, averageDegreeOfSeparation)
+
+"""
+To create 100 users with an average of 10 friends each, how many times would you need to call add_friendship()? Why?
+500 times because we are adding 100 * 10 = 1000 friendships but only 500 are unique.
+
+If you create 1000 users with an average of 5 random friends each, what percentage of other users will be in a particular user's extended social network? What is the average degree of separation between a user and those in his/her extended network?
+
+1000 * 5 = 5000 // 2 = 2500
+
+41.5 to 44.2 % of other users in extended social network
+3 to 4 average degree of separation
+
+STRETCH
+
+You might have found the results from question #2 above to be surprising. Would you expect results like this in real life? If not, what are some ways you could improve your friendship distribution model for more realistic results?
+
+If you followed the hints for part 1, your populate_graph() will run in O(n^2) time. Refactor your code to run in O(n) time. Are there any tradeoffs that come with this implementation?
+"""
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
+    sg.populate_graph(1000, 5)
     print(sg.friendships)
+    # test case
+    # sg.friendships = {1: {8, 10, 5}, 2: {10, 5, 7}, 3: {4}, 4: {9, 3}, 5: {8, 1, 2}, 6: {10}, 7: {2}, 8: {1, 5}, 9: {4}, 10: {1, 2, 6}}
     connections = sg.get_all_social_paths(1)
     print(connections)
+    print('percentageOfOtherUsers', sg.extendedSocialNetwork(1))
